@@ -1,0 +1,30 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: complex-valued-bayesian-lasso
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Dylan
+    family-names: Green
+    email: DGreen@trincoll.edu
+    affiliation: Trinity College
+    orcid: 'https://orcid.org/0000-0001-6184-0183'
+  - given-names: Jonathan
+    family-names: Lindbloom
+    email: Jonathan.T.Lindbloom.GR@dartmouth.edu
+    affiliation: Dartmouth College
+    orcid: 'https://orcid.org/0000-0002-1789-2629'
+  - given-names: Anne
+    family-names: Gelb
+    email: AnneGelb@math.dartmouth.edu
+    affiliation: Dartmouth College
+    orcid: 'https://orcid.org/0000-0002-9219-4572'
+identifiers:
+  - type: doi
+    value: 10.48550/arXiv.2403.16992
+repository-code: >-
+  https://github.com/dylang0311/complex-valued-bayesian-lasso
