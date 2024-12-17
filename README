@@ -1,0 +1,5 @@
+This repository contains the data and code used to perform numerical experiments for the paper "Complex-Valued Signal Recovery using a Generalized Bayesian LASSO" by Green, Lindbloom, and Gelb.
+
+The main file is "complex_bayesian_lasso," which should be used to perform numerical experiments.
+
+For any questions, please reach out to Dylan Green at dgreen@trincoll.edu
