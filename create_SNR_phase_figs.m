@@ -3,13 +3,13 @@ close all
 
 sparse_domain = 'transform';
 forward_op = ["fft" "blur" "rand"];
-savefolder = '/Users/dylangreen/Documents/MATLAB/BayesianLASSO/figures/N200x1';
+savefolder = './figures/N200x1';
 percent_zero = 0.2;
 
 %%
 for ii = 1:length(forward_op)
     savefile = strcat('ErrorCompare_',forward_op(ii),'.png');
-    loadfile = strcat('/Users/dylangreen/Documents/MATLAB/BayesianLASSO/figures/N200x1/DistTrueSol',forward_op(ii),'.mat');
+    loadfile = strcat('./figures/N200x1/DistTrueSol',forward_op(ii),'.mat');
     load(loadfile);
 
     figure(ii);plot(SNRtotal,log(mlePhaseDistFromTrue),'r','LineWidth',2);hold on
@@ -35,9 +35,9 @@ saveas(gcf,strcat(savefolder,filesep,savelegend));
 savefile = strcat('SNRcompare',sparse_domain,'.png');
 for ii = 1:length(forward_op)
     if strcmp(forward_op(ii),"rand")
-        loadfile = strcat('/Users/dylangreen/Documents/MATLAB/BayesianLASSO/figures/N200x1/SNRcompare_',sparse_domain,'_',forward_op(ii),'_percZero',num2str(100*percent_zero),'.mat');
+        loadfile = strcat('./figures/N200x1/SNRcompare_',sparse_domain,'_',forward_op(ii),'_percZero',num2str(100*percent_zero),'.mat');
     else
-        loadfile = strcat('/Users/dylangreen/Documents/MATLAB/BayesianLASSO/figures/N200x1/SNRcompare_',sparse_domain,'_',forward_op(ii),'.mat');
+        loadfile = strcat('./figures/N200x1/SNRcompare_',sparse_domain,'_',forward_op(ii),'.mat');
     end
     load(loadfile);
 
@@ -62,7 +62,7 @@ saveas(gcf,strcat(savefolder,filesep,savelegend));
 SNRused = "20";
 
 savefile = strcat('UnderSampleCompare',sparse_domain,'.png');
-loadfile = strcat('/Users/dylangreen/Documents/MATLAB/BayesianLASSO/figures/N200x1/underSampleDistTrueSol_SNR',SNRused,'.mat');
+loadfile = strcat('./figures/N200x1/underSampleDistTrueSol_SNR',SNRused,'.mat');
 load(loadfile);
 
 figure(5);plot(1-percent_zero_total,log(mlePhaseDistFromTrue),'r','LineWidth',2);hold on
