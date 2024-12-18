@@ -23,17 +23,10 @@ legend('Generalized LASSO','CVBL','Interpreter','latex')
 
 %%
 figure(3);xlabel([]);ylabel([]);
-% Call the legend to your choice, I used a horizontal legend here
 legend_handle = legend('Orientation','vertical');
-% Set the figure Position using the normalized legend Position vector
-% as a multiplier to the figure's current position in pixels
-% This sets the figure to have the same size as the legend
 set(gcf,'Position',(get(legend_handle,'Position')...
     .*[0, 0, 1, 1].*get(gcf,'Position')));
-% The legend is still offset so set its normalized position vector to
-% fill the figure
 set(legend_handle,'Position',[0,0,1,1]);
-% Put the figure back in the middle screen area
 set(gcf, 'Position', get(gcf,'Position') + [500, 400, 0, 0]);
 savelegend = strcat('legend_ErrorCompare.png');
 saveas(gcf,strcat(savefolder,filesep,savelegend));
@@ -57,17 +50,10 @@ legend('$F_F$','$F_B$','$F_U$','Interpreter','latex')
 
 %%
 figure(4);xlabel([]);ylabel([]);
-% Call the legend to your choice, I used a horizontal legend here
 legend_handle = legend('Orientation','vertical');
-% Set the figure Position using the normalized legend Position vector
-% as a multiplier to the figure's current position in pixels
-% This sets the figure to have the same size as the legend
 set(gcf,'Position',(get(legend_handle,'Position')...
     .*[0, 0, 1, 1].*get(gcf,'Position')));
-% The legend is still offset so set its normalized position vector to
-% fill the figure
 set(legend_handle,'Position',[0,0,1,1]);
-% Put the figure back in the middle screen area
 set(gcf, 'Position', get(gcf,'Position') + [500, 400, 0, 0]);
 savelegend = strcat('legend_SNR.png');
 saveas(gcf,strcat(savefolder,filesep,savelegend));
@@ -83,23 +69,15 @@ figure(5);plot(1-percent_zero_total,log(mlePhaseDistFromTrue),'r','LineWidth',2)
 plot(1-percent_zero_total,log(avgPhaseDistFromTrue),'b','LineWidth',2);hold off
 
 xlabel('$\nu$','Interpreter','latex');ylabel('Average Error (logarithmic scale)','Interpreter','latex')
-% legend('Generalized LASSO','CVBL','Interpreter','latex','Location','northeast')
 set(gcf,'Position',[100 100 500 300]);
 saveas(gcf,strcat(savefolder,filesep,savefile));
 
 %%
 figure(5);xlabel([]);ylabel([]);
-% Call the legend to your choice, I used a horizontal legend here
 legend_handle = legend('Orientation','vertical');
-% Set the figure Position using the normalized legend Position vector
-% as a multiplier to the figure's current position in pixels
-% This sets the figure to have the same size as the legend
 set(gcf,'Position',(get(legend_handle,'Position')...
     .*[0, 0, 1, 1].*get(gcf,'Position')));
-% The legend is still offset so set its normalized position vector to
-% fill the figure
 set(legend_handle,'Position',[0,0,1,1]);
-% Put the figure back in the middle screen area
 set(gcf, 'Position', get(gcf,'Position') + [500, 400, 0, 0]);
 savelegend = strcat('legend_SNR.png');
 saveas(gcf,strcat(savefolder,filesep,savelegend));

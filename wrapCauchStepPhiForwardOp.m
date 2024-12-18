@@ -18,21 +18,6 @@ switch forward_op
         numIter = length(phiOut);
 end
 
-% if strcmp(forward_op,"blur")
-%     for ii = 1:numIter
-%         if params.N2 == 1
-%             currentSample = ii:sizeDepend:params.N1;
-%         else
-%             vIndex = ((floor((ii-1)/sizeDepend)+1):sizeDepend:params.N1)';
-%             hIndex = ((mod(ii-1,sizeDepend)+1):sizeDepend:params.N2);
-%             indexSetH = repmat(hIndex,length(vIndex),1);
-%             indexSetV = repmat(vIndex,length(hIndex),1);
-%             currentSample = sub2ind([params.N1,params.N2],indexSetH(:),indexSetV(:));    
-%         end
-%         sampleNumber = strcat('v',num2str(ii));
-%         samples.(sampleNumber) = currentSample;
-%     end
-% end
 
 for ii = 1:numIter
     switch forward_op
@@ -152,7 +137,6 @@ for ii = 1:numIter
         end
         ongoingLast = ongoing;
         ongoing(ongoing) = ~update;
-    %     fprintf('%u\n',nnz(ongoing));
     end
 end
 

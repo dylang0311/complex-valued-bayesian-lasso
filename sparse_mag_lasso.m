@@ -10,8 +10,6 @@ tausq(:,1) = ones(params.N1*params.N2,1);
 etasq(1) = 0.1;
 
 if ~unitary
-    % AHA = real(Amat)'*real(Amat) + imag(Amat)'*imag(Amat);
-
     if strcmp(forward_op,"blur")
         bAmat = sparse([-imag(A(eye(params.N1*params.N2)));real(A(eye(params.N1*params.N2)))]);
         aAmat = sparse([real(A(eye(params.N1*params.N2)));imag(A(eye(params.N1*params.N2)))]);
@@ -30,15 +28,9 @@ for kk = 1:params.N_M
         tic
     end
     
-    if unitary
-        Ginv = spdiags(1./(2/sigStDev.^2 +...
-            tausq(:,kk).^(-1)),0,params.N1*params.N2,params.N1*params.N2);
-        Ginvchol = sqrt(Ginv.*(Ginv>0));
-    else
-        % Ginv = inv(2/sigStDev.^2*AHA +...
-        %     spdiags(tausq(:,kk).^(-1),0,params.N1*params.N2,params.N1*params.N2));
-        % Ginvchol = chol(Ginv);
-    end
+    Ginv = spdiags(1./(2/sigStDev.^2 +...
+        tausq(:,kk).^(-1)),0,params.N1*params.N2,params.N1*params.N2);
+    Ginvchol = sqrt(Ginv.*(Ginv>0));
 
     if unitary
         a(:,kk+1) = Ginvchol*randn(params.N1*params.N2,1) + 2/sigStDev.^2 * Ginv * real(AH(fHat - A(1i*b(:,kk))));
@@ -46,11 +38,9 @@ for kk = 1:params.N_M
         b(:,kk+1) = Ginvchol*randn(params.N1*params.N2,1) + 2/sigStDev.^2 * Ginv * imag(AH(fHat - A(a(:,kk+1))));
     elseif strcmp(forward_op,"blur")
         mu_a = fHat_real - bAmat*(b(:,kk));
-        % a(:,kk+1) = Ginvchol*randn(params.N1*params.N2,1) + 2/sigStDev.^2 * Ginv*aAmat'*mu_a;%real(AH(fHat - A(1i*b(:,kk))));
         a(:,kk+1) = perturbation_optimization_sampler(mu_a,tausq(:,kk),sigStDev,kk,params,aAmat,forward_op,1);
 
         mu_b = fHat_real - aAmat*(a(:,kk+1));
-        % b(:,kk+1) = Ginvchol*randn(params.N1*params.N2,1) + 2/sigStDev.^2 * Ginv*bAmat'*mu_b;%imag(AH(fHat - A(a(:,kk+1))));
         b(:,kk+1) = perturbation_optimization_sampler(mu_b,tausq(:,kk),sigStDev,kk,params,bAmat,forward_op,1);
     elseif strcmp(forward_op,"rand")
         mu_a = fHat_real - bAmat(b(:,kk));
@@ -60,20 +50,6 @@ for kk = 1:params.N_M
         b(:,kk+1) = perturbation_optimization_sampler(mu_b,tausq(:,kk),sigStDev,kk,params,bAmat,forward_op,1,bAmatH);
     end
 
-    
-    % for jj = 1:params.N1*params.N2
-    %     mu = sqrt(1./((a(jj,kk+1).^2+b(jj,kk+1).^2)*params.eta^2));
-    %     lambda = 1/params.eta^2;
-    %     v = randn;
-    %     y = v.^2;
-    %     x = mu + mu.^2.*y/(2*lambda) - mu/(2*lambda).*sqrt(4*mu*lambda.*y+mu.^2.*y.^2);
-    %     if rand <= mu./(mu+x)
-    %         tausq(jj,kk+1) = 1./x;
-    %     else
-    %         tausq(jj,kk+1) = 1./(mu.^2./x);
-    %     end
-    % end
-
     mu = sqrt(1./((a(:,kk+1).^2+b(:,kk+1).^2)*etasq(kk)));
     lambda = 1/etasq(kk);
     v = randn(params.N1*params.N2,1);
@@ -82,8 +58,7 @@ for kk = 1:params.N_M
     test_unif = rand(params.N1*params.N2,1);
     tausq(:,kk+1) = 1./x .* (test_unif<=mu./(mu+x)) + 1./(mu.^2./x) .* (test_unif>=mu./(mu+x));
 
-    % lambdasqsamp = gamrnd((params.N1*params.N2)+params.lambda_r-2,1/(sum(tausq(:,kk+1)/2)+params.lambda_delta));
-    etasq(kk+1) = 1/gamrnd((params.N1*params.N2)+params.lambda_r,1/(sum(tausq(:,kk+1)/2)+params.lambda_delta)); %1/lambdasqsamp;
+    etasq(kk+1) = 1/gamrnd((params.N1*params.N2)+params.lambda_r,1/(sum(tausq(:,kk+1)/2)+params.lambda_delta));
     
     if kk < 10
         toc

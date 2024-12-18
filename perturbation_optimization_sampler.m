@@ -16,7 +16,6 @@ switch forward_op
         Hy = HH(y);
 end
 
-% x_s = (1/sigStandDev^2*(H'*H) + G'*(tausq.*G))\((G'.*tausq)*mu_tilde + 1/sigStandDev^2*H'*(y_tilde));
 if G == 1
     switch forward_op
         case "fft"

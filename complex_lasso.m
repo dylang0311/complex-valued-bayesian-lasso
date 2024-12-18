@@ -25,6 +25,8 @@ function [zout, history] = complex_lasso(F, y, lambda, rho, alpha)
 % More information can be found in the paper linked at:
 % http://www.stanford.edu/~boyd/papers/distr_opt_stat_learning_admm.html
 %
+% Code gathered from https://web.stanford.edu/~boyd/papers/admm/group_lasso/group_lasso.html
+%
 
 t_start = tic;
 

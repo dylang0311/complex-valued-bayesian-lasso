@@ -75,33 +75,6 @@ for kk = 1:params.N_M
     if kk <= 10
         tic
     end
-
-
-    % post_density(kk) = 1/sigStDev^2*sum(abs(fHat-A(g(:,kk).*exp(1i*phi(:,kk)))).^2) ...
-    %                         + 1/2*sum(log(tausq(:,kk))) + 1/2*(L*g(:,kk))'*(1./tausq(:,kk).*(L*g(:,kk))) ...
-    %                         + (size(L,1)+params.lambda_r-1)*log(etasq(kk)) ...
-    %                         + params.lambda_delta/etasq(kk) + sum(tausq(:,kk)/etasq(kk)/2);
-    % 
-    % post_density(kk) = 1/sigStDev^2*sum(abs(fHat-A(g(:,kk).*exp(1i*phi(:,kk)))).^2) ...
-    %                         + size(L,1)*1/2*log(etasq(:,kk)) + 1/sqrt(etasq(kk))*sum(abs(L*g(:,kk)));
-
-    % if kk > 3
-    %     if params.N2 == 1
-    %         figure(123);subplot(1,3,1);
-    %         figure(123);plot(g(:,kk));ylim([0.5 3.5]);title('Random Sample at Current Iteration')
-    %         subplot(1,3,2);plot(post_density(3:kk));title('Value of -log Posterior')
-    %         subplot(1,3,3);plot(1./etasq(3:kk));title('Value of eta to the -2')
-    %         set(gcf,'Position',[100 100 1200 400]);
-    %     end
-    % 
-    %     if params.N2 ~= 1
-    %         figure(123);subplot(1,3,1);
-    %         imagesc(reshape(g(:,kk),params.N1,params.N2));colorbar;clim([0.5 2.5]);title('Random Sample at Current Iteration')
-    %         subplot(1,3,2);plot(post_density(2:kk));title('Value of -log Posterior')
-    %         subplot(1,3,3);plot(etasq(2:kk));title('Value of etasq')
-    %         set(gcf,'Position',[100 100 1200 400]);
-    %     end
-    % end
  
     if unitary
         % AHAPhi = speye(params.N1*params.N2);
@@ -210,23 +183,6 @@ for kk = 1:params.N_M
     
     tausq(abs(Lg)<=1e-8,kk+1) = gamrnd(1/2,2*etasq(kk),nnz(abs(Lg)<=1e-8),1);
 
-    % for jj = 1:size(L,1)
-    %     mu = sqrt(1./(Lg(jj.^2*etasq(kk)));
-    %     lambda = 1/etasq(kk);
-    %     v = randn;
-    %     y = v.^2;
-    %     x = mu + mu.^2.*y/(2*lambda) - mu/(2*lambda).*sqrt(4*mu*lambda.*y+mu.^2.*y.^2);
-    %     if rand <= mu./(mu+x)
-    %         tausq(jj,kk+1) = 1./x;
-    %     else
-    %         tausq(jj,kk+1) = 1./(mu.^2./x);
-    %     end
-    %     if abs(Lg(jj)) <= 1e-10
-    %         tausq(jj,kk+1) = gamrnd(1/2,2*etasq(kk));
-    %     end
-    % end
-
-
     if unitary
         phi(:,kk+1) = wrapCauchStepPhi(g(:,kk+1).*AHfHat,1./sqrt(sigsq(kk)),unitary,phi(:,kk));
     else
@@ -235,20 +191,13 @@ for kk = 1:params.N_M
         else
             AmatG = A(diag(g(:,kk+1)));
         end
-        % phi(:,kk+1) = wrapCauchStepPhi(g(:,kk+1).*AHfHat,1./sigStDev,unitary,phi(:,kk),AmatG'*AmatG,params);
         phi(:,kk+1) = wrapCauchStepPhiForwardOp(g(:,kk+1).*AHfHat,1./sqrt(sigsq(kk)),forward_op,phi(:,kk),AmatG'*AmatG,params,samplesBlur);
     end
 
-
-    % AHA = real(AmatG)'*real(AmatG) + imag(AmatG)'*imag(AmatG);
-    % mu = real(AmatG)'*real(fHat) + imag(AmatG)'*imag(fHat);
-
-    % lambdasqsamp(kk+1) = gamrnd(size(L,1)+(params.lambda_r-1),1./(sum(tausq(:,kk+1)/2)+params.lambda_delta));
-    % recip_eta_sq = gamrnd(size(L,1)+params.lambda_r,1./ (sum(tausq(:,kk+1)/2)+params.lambda_delta) );
     if and(params.N2~=1, strcmp(params.sparse_domain,"transform"))
         etasq(kk+1) = 0.01;
     else
-        etasq(kk+1) = 1/gamrnd(size(L,1)+params.lambda_r,1/(sum(tausq(:,kk+1)/2)+params.lambda_delta)); %1/lambdasqsamp(kk+1);
+        etasq(kk+1) = 1/gamrnd(size(L,1)+params.lambda_r,1/(sum(tausq(:,kk+1)/2)+params.lambda_delta));
     end
 
     if params.learn_sigma

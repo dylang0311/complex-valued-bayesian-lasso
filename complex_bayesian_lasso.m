@@ -11,7 +11,7 @@ percent_zero_total = 0.2;%0:0.005:0.5; % only impacts "rand" forward operator
 params.N1 = 200;
 params.N2 = 1;
 params.sparse_domain = "transform"; % signal or transform
-params.test_image = "piper"; % transform case, "shepp" or "piper"
+params.test_image = "shepp"; % transform case, "shepp"
 params.CCD = 0;
 params.real = 0;
 
@@ -145,30 +145,15 @@ switch forward_op
         Ainv = @(x) AH(x);
 
         zero_vec = zeros(params.N1*params.N2,1);
-        % Amat = A(eye(params.N1*params.N2));
-        % Amat = zeros(round(params.N1*params.N2*(1-percent_zero)),params.N1*params.N2);
-        % for jj = 1:params.N1*params.N2
-        %     one_vec = zero_vec;one_vec(jj) = 1;
-        %     Amat(:,jj) = A(one_vec);
-        % end
-        % AHA = Amat'*Amat;
 
         unitary = 0;
         periodicBC = 0;
 end
 
 %% compute data vector
-% if strcmp(forward_op,"blur")
-    % sigStDev = mean(abs(U*S*A(fx)))*10^(-SNR/20);
-    % fHat = U*S*A(fx) + sigStDev/sqrt(2)*(randn(size(fx)) + 1i*randn(size(fx)));
-    % fHat = S\U'*fHat;
-    % sigStDev = sqrt(sigStDev^2*prod(diag(S))^(-2));
-% else
-    % sigStDev = sum(abs(A(fx)).^2)/length(A(fx))*10^(-SNR/20);
-    fHat_true = A(fx);
-    sigStDev = SNR_to_stdDev(fHat_true,SNR,params);
-    fHat = fHat_true + sigStDev/sqrt(2)*(randn(length(fHat_true),1) + 1i*randn(length(fHat_true),1));
-% end
+fHat_true = A(fx);
+sigStDev = SNR_to_stdDev(fHat_true,SNR,params);
+fHat = fHat_true + sigStDev/sqrt(2)*(randn(length(fHat_true),1) + 1i*randn(length(fHat_true),1));
 
 %% Bayesian LASSO time
 
@@ -182,28 +167,14 @@ elseif strcmp(params.sparse_domain,"transform")
     saveVariablesTransform(savefolder,params,SNR,g,phi,tausq,etasq,forward_op)
 end
 
-% if strcmp(forward_op,"blur")
-%     if strcmp(params.sparse_domain,"signal")
-%         a = V*a;
-%         b = V*b;
-%     elseif strcmp(params.sparse_domain,"transform")
-%         g = V*g;
-%         phi = V*phi;
-%     end
-% end
 
 %% Plot results
 close all
-% if params.N2 == 256
-%     clear tausq
-% end
 L = sparse_operator(params,1,PAORDER,periodicBC);
 if params.N2 == 1
     figure(1);plot(physGrid,abs(fx),'k','LineWidth',1.5);hold on;
     figure(2);plot(physGrid,abs(fx),'k','LineWidth',1.5);hold on;
     if strcmp(params.sparse_domain,"signal")
-        % Amat_phase = A(diag(exp(1i*angle(Ainv(fHat)))));
-        % figure(1);plot(physGrid,lasso([real(Amat_phase);imag(Amat_phase)],[real(fHat);imag(fHat)],'Lambda',sigStDev^2/(2*params.N1*params.N2*mean(sqrt(etasq))),'Standardize',false),'r');
         if strcmp(forward_op,"rand")
             Amat = A(eye(params.N1));
         end
@@ -222,8 +193,6 @@ if params.N2 == 1
         figure(3);xline(angle(fx(positive_values(3))),'k--','LineWidth',1.5);hold on;
         invPhase = angle(z_lasso);xline(invPhase(positive_values(3)),'r-.','LineWidth',2);
         kde(angle(a(positive_values(3),:) + 1i*b(positive_values(3),:)));
-        % lowerquant = quantile(angle(a(positive_values(3),:) + 1i*b(positive_values(3),:)),0.05,2);xline(lowerquant,'b:','LineWidth',1);
-        % upperquant = quantile(angle(a(positive_values(3),:) + 1i*b(positive_values(3),:)),0.95,2);xline(upperquant,'b:','LineWidth',1);
         set(findall(gca, 'Type', 'Line'),'LineWidth',2);hold off;
 
         figure(4);plot(physGrid,real(fx),'k','LineWidth',1.5);hold on;
@@ -263,15 +232,10 @@ if params.N2 == 1
         figure(3);xline(angle(fx(60)),'k--','LineWidth',2);hold on;
         invPhase = angle(z_lasso);xline(invPhase(60),'r-.','LineWidth',2);
         kde(phi(60,:));
-        % lowerquant = quantile(phi(60,:),0.05,2);xline(lowerquant,'b:','LineWidth',1);
-        % upperquant = quantile(phi(60,:),0.95,2);xline(upperquant,'b:','LineWidth',1);
         set(findall(gca, 'Type', 'Line'),'LineWidth',2);hold off;
 
         figure(4);colororder({'k','b'});yyaxis right;
         plot(physGrid(1:size(L,1)),mean(tausq,2),'LineWidth',2);hold on;
-        % lowerquant = quantile(tausq,0.25,2);
-        % upperquant = quantile(tausq,0.75,2);
-        % shade(physGrid,lowerquant,'b',physGrid,upperquant,'b','FillType',[1 2;2 1]);
         ylim([0 0.2]);yyaxis left;
         plot(physGrid,abs(fx),'--','LineWidth',2);hold off;
         ylim([0.5 2.75]);xlim([-pi pi]);
@@ -291,15 +255,7 @@ else
     if strcmp(params.sparse_domain,"signal")
         figure(1);
         imagesc(xMesh(1:params.N1,1),yMesh(1:params.N2,1),reshape(mean(sqrt(a.^2+b.^2),2),params.N1,params.N2));
-        % xlim([-pi pi]);ylim([-0.25 1.75]);
-    
-        % lowerquant = quantile(sqrt(a.^2+b.^2),0.05,2);
-        % upperquant = quantile(sqrt(a.^2+b.^2),0.95,2);
-        % figure(2);imagesc(xMesh(1:params.N1,1),yMesh(1:params.N2,1),reshape(upperquant-lowerquant,params.N1,params.N2));
         figure(2);imagesc(xMesh(1:params.N1,1),yMesh(1:params.N2,1),reshape(mean(tausq,2),params.N1,params.N2));
-        % figure(2);plot(physGrid,mean(sqrt(a.^2+b.^2),2),'b');
-        % shade(physGrid,lowerquant,'b',physGrid,upperquant,'b','FillType',[1 2;2 1]);hold off
-        % xlim([-pi pi]);ylim([-0.25 1.75]);
         if params.CCD == 1
             [~,positive_values] = max(abs(fx));
         else
@@ -308,8 +264,6 @@ else
         figure(3);xline(angle(fx(positive_values(1))),'k--','LineWidth',2);hold on;
         invPhase = angle(Ainv(fHat));xline(invPhase(positive_values(1)),'r--','LineWidth',2);
         kde(angle(a(positive_values(1),:) + 1i*b(positive_values(1),:)));
-        % lowerquant = quantile(angle(a(positive_values(1),:) + 1i*b(positive_values(1),:)),0.05,2);xline(lowerquant,'b:','LineWidth',1);
-        % upperquant = quantile(angle(a(positive_values(1),:) + 1i*b(positive_values(1),:)),0.95,2);xline(upperquant,'b:','LineWidth',1);
         set(findall(gca, 'Type', 'Line'),'LineWidth',2);hold off;
     
         CVBL_error(iiSNR) = 1/(params.N1*params.N2)*norm(fx-(mean(a,2)+1i*mean(b,2)),2)^2;
@@ -320,14 +274,9 @@ else
 
         figure(1);
         imagesc(xMesh(1:params.N1,1),yMesh(1:params.N2,1),reshape(mean(g,2),params.N1,params.N2));
-        % xlim([-pi pi]);ylim([0.5 2.75]);
-    
         lowerquant = quantile(g,0.05,2);
         upperquant = quantile(g,0.95,2);
         figure(2);imagesc(xMesh(1:params.N1,1),yMesh(1:params.N2,1),reshape(upperquant-lowerquant,params.N1,params.N2));
-        % shade(physGrid,lowerquant,'b',physGrid,upperquant,'b','FillType',[1 2;2 1]);hold off
-        % xlim([-pi pi]);ylim([0.5 2.75]);
-    
         figure(3);xline(angle(fx(29550)),'k--','LineWidth',2);hold on;
         invPhase = angle(z_lasso);xline(invPhase(29550),'r-.','LineWidth',2);
         kde(phi(29550,:));
@@ -342,7 +291,6 @@ else
         figure(13);imagesc(reshape(abs(mean(g,2)-abs(fx)),params.N1,params.N2));colorbar;
     end
 end
-% MLE_error = 1/(params.N1*params.N2)*norm(fx-AH(fHat),2)^2;
 
 if params.N2 == 1
     figure(1);
@@ -483,17 +431,10 @@ if createLegends == 1
     
     for jj = 1:maxNumFig
         figure(jj);
-        % Call the legend to your choice, I used a horizontal legend here
         legend_handle = legend('Orientation','vertical');
-        % Set the figure Position using the normalized legend Position vector
-        % as a multiplier to the figure's current position in pixels
-        % This sets the figure to have the same size as the legend
         set(gcf,'Position',(get(legend_handle,'Position')...
             .*[0, 0, 1, 1].*get(gcf,'Position')));
-        % The legend is still offset so set its normalized position vector to
-        % fill the figure
         set(legend_handle,'Position',[0,0,1,1]);
-        % Put the figure back in the middle screen area
         set(gcf, 'Position', get(gcf,'Position') + [500, 400, 0, 0]);
         savelegend = strcat('legend',legNames(jj),'.png');
         saveas(gcf,strcat(savefolder,filesep,savelegend));
